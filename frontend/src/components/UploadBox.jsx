@@ -1,0 +1,9 @@
+import { useRef, useState } from 'react'
+import { FileText, Image, UploadCloud, X } from 'lucide-react'
+
+const accepted = '.pdf,.txt,.docx,.png,.jpg,.jpeg'
+export default function UploadBox({ onAnalyze, loading }) {
+  const [files, setFiles] = useState([]); const input = useRef()
+  function add(incoming) { setFiles((current) => [...current, ...Array.from(incoming)].slice(0, 8)) }
+  return <div className="glass-card p-5"><div className="mb-4"><p className="eyebrow">SOURCE MATERIAL</p><h3 className="font-display text-lg font-bold">Upload your notes</h3></div><div onClick={() => input.current.click()} onDrop={(event) => { event.preventDefault(); add(event.dataTransfer.files) }} onDragOver={(event) => event.preventDefault()} className="drop-zone"><UploadCloud size={28} /><p className="mt-2 text-sm font-semibold">Drop files here</p><p className="mt-1 text-xs text-slate-500">PDF, TXT, DOCX, PNG or JPG</p><input ref={input} type="file" accept={accepted} multiple onChange={(event) => add(event.target.files)} className="hidden" /></div>{files.length > 0 && <div className="mt-4 space-y-2">{files.map((file, index) => <div key={`${file.name}-${index}`} className="file-row"><span className="text-teal-600">{file.type.startsWith('image/') ? <Image size={16} /> : <FileText size={16} />}</span><span className="min-w-0 flex-1 truncate text-xs font-medium">{file.name}</span><button onClick={() => setFiles((all) => all.filter((_, position) => position !== index))}><X size={15} /></button></div>)}</div>}<button disabled={!files.length || loading} onClick={() => onAnalyze(files)} className="primary-button mt-5 w-full">{loading ? 'Analyzing notes...' : `Forge formula sheet${files.length ? ` (${files.length})` : ''}`}</button><p className="mt-3 text-center text-[11px] text-slate-400">Maximum 8 files · 15 MB each</p></div>
+}
